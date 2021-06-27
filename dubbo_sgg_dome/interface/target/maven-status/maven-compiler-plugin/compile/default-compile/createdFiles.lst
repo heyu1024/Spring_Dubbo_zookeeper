@@ -1,0 +1,4 @@
+com\heyu\bean\UserAddress.class
+com\heyu\service\UserService.class
+com\heyu\service\UserServiceMock.class
+com\heyu\service\OrderService.class
