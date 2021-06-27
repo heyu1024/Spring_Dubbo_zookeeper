@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <context:component-scan base-package="com.heyu.impl"></context:component-scan>
+
+    <!--    消费者的名字-->
+    <dubbo:application name="oreder_service_consumer"></dubbo:application>
+
+    <!--    指定注册中心地址-->
+    <dubbo:registry address="zookeeper://192.168.118.129:2181"></dubbo:registry>
+
+    <!--    需要调用的远程服务的接口，生成远程服务代理
+        1、精确优先（方法优先，接口级次之，全局配置再次之）
+        2、消费者设置优先（如果级别一样，则消费方优先，提供方次之）
+
+    -->
+<!--    timeout="0" 超时 默认1000毫秒-->
+<!--    retires="" 重试次数,不包含第一次调用-->
+<!--    幂等（设置重试次数）【查询，删除，修改】。无论执行多少次，效果一样
+        非幂等（不能设置重试次数）【新增】
+-->
+<!--    stub="com.heyu.stub.UserServiceStub" 本地存根-->
+    <dubbo:reference interface="com.heyu.service.UserService" id="userService"
+                     timeout="5000" retries="3" version="1.0.0"
+
+    >
+        <dubbo:method name="getUserAddressList" timeout="1000"></dubbo:method>
+    </dubbo:reference>
+
+<!--    配置当前消费者的统一规则 :所有的服务都不检查-->
+<!--    mock="retrun null" 服务降级
+        mock="true" 配制类
+-->
+    <dubbo:consumer check="false" timeout="6000" mock="true"></dubbo:consumer>
+
+    <!--    连接监控中心-->
+    <dubbo:monitor protocol="registry"></dubbo:monitor>
+</beans>
+
